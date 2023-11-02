@@ -67,6 +67,32 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
                 # y se añade a las lista de ventanas Q
                 ventanas_R.append(l_w)
 
+
+    # se crea una lista con todos las ventanas de las canciones Q juntas
+    ventanas_Q_full = []
+
+    # para cada lista de ventanas de la primera canción
+    for ventanas in ventanas_Q:
+        # para cada ventana de la canción
+        for ventana in ventanas:
+            # se añade a la lista de ventanas
+            ventanas_Q_full.append(ventana)
+
+    # se crea un array con todos los descriptores de las ventanas de las canciones en Q juntas (en el mismo orden que las ventanas)
+    descriptores_Q_full = []
+
+    # para cada lista de de descriptores
+    for descriptor in descriptores_Q:
+        if len(descriptores_Q_full) == 0:
+            descriptores_Q_full = descriptor
+        else:
+            descriptores_Q_full = np.vstack([descriptores_Q_full, descriptor])
+
+    # print("TAMAÑO DE LA LISTA DE VENTANAS Q",len(ventanas_Q_full))
+
+    # print("TAMAÑO DEl VECTOR DE DESCRIPTORES Q",descriptores_Q_full.shape)
+
+
     # se crea una lista con todos las ventanas de las canciones R juntas
     ventanas_R_full = []
 
@@ -87,9 +113,11 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
         else:
             descriptores_R_full = np.vstack([descriptores_R_full, descriptor])
 
-    print("TAMAÑO DE LA LISTA DE VENTANAS R",len(ventanas_R_full))
+    # print("TAMAÑO DE LA LISTA DE VENTANAS R",len(ventanas_R_full))
 
-    print("TAMAÑO DEl VECTOR DE DESCRIPTORES R",descriptores_R_full.shape)
+    # print("TAMAÑO DEl VECTOR DE DESCRIPTORES R",descriptores_R_full.shape)
+
+
 
 
     #  3-para cada descriptor q localizar el mas cercano en R
