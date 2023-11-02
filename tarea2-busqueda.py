@@ -6,6 +6,9 @@ import sys
 import os.path
 import pickle
 import numpy as np
+import scipy
+
+import aux_func
 
 
 def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
@@ -64,6 +67,29 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
                 # y se añade a las lista de ventanas Q
                 ventanas_R.append(l_w)
 
+    # se crea una lista con todos las ventanas de las canciones R juntas
+    ventanas_R_full = []
+
+    # para cada lista de ventanas de la primera canción
+    for ventanas in ventanas_R:
+        # para cada ventana de la canción
+        for ventana in ventanas:
+            # se añade a la lista de ventanas
+            ventanas_R_full.append(ventana)
+
+    # se crea un array con todos los descriptores de las ventanas de las canciones en R juntas (en el mismo orden que las ventanas)
+    descriptores_R_full = []
+
+    # para cada lista de de descriptores
+    for descriptor in descriptores_R:
+        if len(descriptores_R_full) == 0:
+            descriptores_R_full = descriptor
+        else:
+            descriptores_R_full = np.vstack([descriptores_R_full, descriptor])
+
+    print("TAMAÑO DE LA LISTA DE VENTANAS R",len(ventanas_R_full))
+
+    print("TAMAÑO DEl VECTOR DE DESCRIPTORES R",descriptores_R_full.shape)
 
 
     #  3-para cada descriptor q localizar el mas cercano en R
