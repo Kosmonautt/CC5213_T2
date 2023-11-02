@@ -4,6 +4,8 @@
 
 import sys
 import os.path
+import pickle
+import numpy as np
 
 
 def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
@@ -16,9 +18,54 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
     elif os.path.exists(dir_resultados_knn):
         print("ERROR: ya existe archivo {}".format(dir_resultados_knn))
         sys.exit(1)
-    # Implementar la busqueda
-    #  1-leer descriptores de Q de dir_descriptores_q
-    #  2-leer descriptores de R de dir_descriptores_r
+
+    # se obtienen los descriptores y ventanas de Q
+    # lista para los descriptores
+    descriptores_Q = []    
+    # lista para las ventanas
+    ventanas_Q = []
+
+    # para cada archivo en el directorio de descriptores q (wav, .npy o pickle)
+    for descriptores in os.listdir(dir_descriptores_q):
+        # si es un archivo .npy, es el descriptor
+        if(".npy" in descriptores):
+            # se pasa a un objeto ndp.dArray
+            d = np.load(dir_descriptores_q+"/"+descriptores)
+            # se guarda en la lista de descriptores
+            descriptores_Q.append(d)
+        # si es un archivo .pickle, es una lista de ventanas
+        if(".pickle" in descriptores):
+            # se pasa a un objeto list 
+            with open(dir_descriptores_q+"/"+descriptores, "rb") as file:
+                l_w: list = pickle.load(file)
+                # y se añade a las lista de ventanas Q
+                ventanas_Q.append(l_w)
+
+
+    # se obtienen los descriptores y ventanas de R
+    # lista para los descriptores
+    descriptores_R = []    
+    # lista para las ventanas
+    ventanas_R = []
+
+    # para cada archivo en el directorio de descriptores q (wav, .npy o pickle)
+    for descriptores in os.listdir(dir_descriptores_r):
+        # si es un archivo .npy, es el descriptor
+        if(".npy" in descriptores):
+            # se pasa a un objeto ndp.dArray
+            d = np.load(dir_descriptores_r+"/"+descriptores)
+            # se guarda en la lista de descriptores
+            descriptores_R.append(d)
+        # si es un archivo .pickle, es una lista de ventanas
+        if(".pickle" in descriptores):
+            # se pasa a un objeto list 
+            with open(dir_descriptores_r+"/"+descriptores, "rb") as file:
+                l_w: list = pickle.load(file)
+                # y se añade a las lista de ventanas Q
+                ventanas_R.append(l_w)
+
+
+
     #  3-para cada descriptor q localizar el mas cercano en R
     #     usar cdist o usar indices de busqueda eficiente
     #  3-crear dir_resultados_knn
