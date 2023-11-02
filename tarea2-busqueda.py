@@ -130,7 +130,7 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
     os.makedirs(dir_resultados_knn, exist_ok=True)
 
     # se crea el archivo con los resultados knn
-    archivo = open(dir_resultados_knn+'/'+'resultados', 'w')
+    archivo = open(dir_resultados_knn+'/'+'resultados.txt', 'w')
 
     # para cada query, se escribe en el archivo con los resultados
     for i in range(len(ventanas_Q_full)):
