@@ -88,9 +88,9 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
         else:
             descriptores_Q_full = np.vstack([descriptores_Q_full, descriptor])
 
-    # print("TAMAÑO DE LA LISTA DE VENTANAS Q",len(ventanas_Q_full))
+    print("TAMAÑO DE LA LISTA DE VENTANAS Q",len(ventanas_Q_full))
 
-    # print("TAMAÑO DEl VECTOR DE DESCRIPTORES Q",descriptores_Q_full.shape)
+    print("TAMAÑO DEl VECTOR DE DESCRIPTORES Q",descriptores_Q_full.shape)
 
 
     # se crea una lista con todos las ventanas de las canciones R juntas
@@ -113,21 +113,30 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
         else:
             descriptores_R_full = np.vstack([descriptores_R_full, descriptor])
 
-    # print("TAMAÑO DE LA LISTA DE VENTANAS R",len(ventanas_R_full))
+    print("TAMAÑO DE LA LISTA DE VENTANAS R",len(ventanas_R_full))
 
-    # print("TAMAÑO DEl VECTOR DE DESCRIPTORES R",descriptores_R_full.shape)
+    print("TAMAÑO DEl VECTOR DE DESCRIPTORES R",descriptores_R_full.shape)
 
+    # se calcula la matriz de distancias 
+    matriz_distancias = scipy.spatial.distance.cdist(descriptores_Q_full, descriptores_R_full, metric = 'euclidean')
 
+    #print(matriz_distancias.shape)
 
+    #obtener la posicion del más cercano por fila
+    posicion_min = np.argmin(matriz_distancias, axis=1)
+    minimo = np.amin(matriz_distancias, axis=1)
 
-    #  3-para cada descriptor q localizar el mas cercano en R
-    #     usar cdist o usar indices de busqueda eficiente
-    #  3-crear dir_resultados_knn
-    #    os.makedirs(dir_resultados_knn, exist_ok=True)
-    #  4-escribir los knn en dir_resultados_knn
-    #    incluir tambien los tiempos que representa cada ventana de q y r
-    # borrar la siguiente linea
-    print("ERROR: no implementado!")
+    # se crea la carpeta para los resultados knn
+    os.makedirs(dir_resultados_knn, exist_ok=True)
+
+    # se crea el archivo con los resultados knn
+    archivo = open(dir_resultados_knn+'/'+'resultados', 'w')
+
+    # para cada query, se escribe en el archivo con los resultados
+    for i in range(len(ventanas_Q_full)):
+        query = ventanas_Q_full[i]
+        conocido = ventanas_R_full[posicion_min[i]]
+        print("{} | {}".format(query, conocido), file=archivo)
 
 
 # inicio de la tarea
