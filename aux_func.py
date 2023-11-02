@@ -9,13 +9,10 @@ def calcular_descriptores_mfcc(archivo_wav, sample_rate, samples_por_ventana, sa
     mfcc = librosa.feature.mfcc(y=samples, sr=sr, n_mfcc=dimension, n_fft=samples_por_ventana, hop_length=samples_salto)
     # convertir a descriptores por fila
     descriptores = mfcc.transpose()
-    # se borra la primer columna
-    # IMPLEMENTAR
-    # IMPLEMENTAR
-    # IMPLEMENTAR
-    # IMPLEMENTAR
-    # IMPLEMENTAR
-    # IMPLEMENTAR
+
+    # se borra la primera columna
+    descriptores = descriptores[:,1:]
+
     return descriptores
 
 # crea un objeto ventana que almacena el nombre de la canción, y el tiempo desde que empieza hasta que termina el sample
