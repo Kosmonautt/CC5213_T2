@@ -11,7 +11,7 @@ def calcular_descriptores_mfcc(archivo_wav, sample_rate, samples_por_ventana, sa
     descriptores = mfcc.transpose()
 
     # se borra la primera columna
-    descriptores = descriptores[:,2:]
+    descriptores = descriptores[:,1:]
 
     return descriptores
 
@@ -23,7 +23,7 @@ class Ventana:
         self.segundos_hasta = segundos_hasta
     
     def __str__(self):
-        return "{} [{:6.3f}-{:6.3f}]".format(self.nombre_archivo, self.segundos_desde, self.segundos_hasta)
+        return "{};{:6.3f}-{:6.3f}".format(self.nombre_archivo, self.segundos_desde, self.segundos_hasta)
     
 # crea una lista de ventanas para un audio
 def lista_ventanas(nombre_archivo, numero_descriptores, sample_rate, samples_por_ventana):

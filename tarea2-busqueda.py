@@ -88,10 +88,6 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
         else:
             descriptores_Q_full = np.vstack([descriptores_Q_full, descriptor])
 
-    print("TAMAÑO DE LA LISTA DE VENTANAS Q",len(ventanas_Q_full))
-
-    print("TAMAÑO DEl VECTOR DE DESCRIPTORES Q",descriptores_Q_full.shape)
-
 
     # se crea una lista con todos las ventanas de las canciones R juntas
     ventanas_R_full = []
@@ -113,14 +109,9 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
         else:
             descriptores_R_full = np.vstack([descriptores_R_full, descriptor])
 
-    print("TAMAÑO DE LA LISTA DE VENTANAS R",len(ventanas_R_full))
-
-    print("TAMAÑO DEl VECTOR DE DESCRIPTORES R",descriptores_R_full.shape)
 
     # se calcula la matriz de distancias 
     matriz_distancias = scipy.spatial.distance.cdist(descriptores_Q_full, descriptores_R_full, metric = 'euclidean')
-
-    #print(matriz_distancias.shape)
 
     #obtener la posicion del más cercano por fila
     posicion_min = np.argmin(matriz_distancias, axis=1)
@@ -136,7 +127,11 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
     for i in range(len(ventanas_Q_full)):
         query = ventanas_Q_full[i]
         conocido = ventanas_R_full[posicion_min[i]]
-        print("{} | {}".format(query, conocido), file=archivo)
+        # desfase entre los tiempos
+        dist = conocido.segundos_desde - query.segundos_desde
+        print("{}|{}|{}".format(query, conocido, dist), file=archivo)
+
+    archivo.close()
 
 
 # inicio de la tarea
