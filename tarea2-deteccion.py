@@ -91,7 +91,7 @@ def tarea2_deteccion(dir_resultados_knn, file_resultados_txt):
     i = 0
 
     # número de "strikes" permitidos, si es que se está en fun fragmento y el nombre es distinto strike veces, entonces ya terminó el fragmento
-    strikes_permitidos = 3
+    strikes_permitidos = 4
 
 
     # se leen todas las líneas
@@ -119,6 +119,7 @@ def tarea2_deteccion(dir_resultados_knn, file_resultados_txt):
                 # si se cumple, se entra en un fragmento
                 in_fragmento = True
                 # se rellenan los "útlimos"
+                # el desfase
                 ult_desfase = desfase_i
                 # el tiempo de inicio (radio)
                 ult_t_inicio = elem_i_struct[0][1]
@@ -126,6 +127,8 @@ def tarea2_deteccion(dir_resultados_knn, file_resultados_txt):
                 ult_t_final = elem_i_struct[0][2]
                 # el nombre de canción
                 ult_cancion = nombre_i
+                # el nombre de la radio
+                ult_radio = elem_i_sgte_struct[0][0]
                 # última confianza
                 ult_confianza = 1
                 # ultimo strikes 
@@ -165,8 +168,30 @@ def tarea2_deteccion(dir_resultados_knn, file_resultados_txt):
                 in_fragmento = False
                 # se consigue la duración 
                 largo = ult_t_final - ult_t_inicio
+                # se le saca lo que va después de m4a
+                ult_cancion = ult_cancion.split(".")
+                ult_cancion = ult_cancion[0]+"."+ult_cancion[1]
+
+                ult_radio = ult_radio.split(".")
+                ult_radio = ult_radio[0]+"."+ult_radio[1]
+
                 # y se escrbe en el archivo
-                print("{}\t{}\t{}\t{}\t{}".format(ult_radio, ult_t_inicio, largo, ult_cancion, ult_confianza), file=archivo)   
+                print("{}\t{}\t{}\t{}\t{}".format(ult_radio ,ult_t_inicio, largo, ult_cancion, ult_confianza), file=archivo)   
+
+                # ultimo desface
+                ult_desfase = None
+                # último tiempo de inicio 
+                ult_t_inicio = None
+                # último tiempo de final
+                ult_t_final = None
+                # último archivo de Q
+                ult_radio = None
+                # último arhcivo de R
+                ult_cancion = None
+                # última confianza
+                ult_confianza = None
+                # utlimos "strikes ocurridos"
+                ult_strikes = None
 
         # se aumenta el indice
         i+=1
