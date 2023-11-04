@@ -18,7 +18,7 @@ samples_por_ventana = 4096
 # salto de cada sample (igual al anterior para no tener overlap)
 samples_salto = 4096
 # dimensión del MFCC
-dimension = 40
+dimension = 45
 
 
 def convertir_a_wav(archivo_audio, sample_rate, dir_temporal):
