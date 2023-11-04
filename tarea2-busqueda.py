@@ -10,6 +10,9 @@ import scipy
 
 import aux_func
 
+def truncate_float(float_number, decimal_places):
+    multiplier = 10 ** decimal_places
+    return int(float_number * multiplier) / multiplier
 
 def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
     if not os.path.isdir(dir_descriptores_q):
@@ -128,8 +131,10 @@ def tarea2_busqueda(dir_descriptores_q, dir_descriptores_r, dir_resultados_knn):
         query = ventanas_Q_full[i]
         conocido = ventanas_R_full[posicion_min[i]]
         # desfase entre los tiempos
-        dist = conocido.segundos_desde - query.segundos_desde
-        print("{}|{}|{}".format(query, conocido, dist), file=archivo)
+        dist = truncate_float(conocido.segundos_desde - query.segundos_desde, 10)
+        # el puntaje 
+        score = truncate_float(minimo[i], 10)
+        print("{}|{}|{}|{}".format(query, conocido, dist, score), file=archivo)
 
     archivo.close()
 

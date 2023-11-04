@@ -22,28 +22,13 @@ def tarea2_deteccion(dir_resultados_knn, file_resultados_txt):
         f_lineas = f.readlines()
 
 
-    # # se crea la carpeta para los resultados finales
-    # os.makedirs(file_resultados_txt, exist_ok=True)
-
     # se crea el archivo con los resultados finales 
     archivo = open(file_resultados_txt, 'w+')
 
-    # ultimo desface
-    ult_desfase = None
-    # último tiempo de inicio 
-    ult_t_inicio = None
-    # último tiempo de final
-    ult_t_final = None
-    # último archivo de Q
-    ult_radio = None
-    # último arhcivo de R
-    ult_cancion = None
-    # última confianza
-    ult_confianza = None
-
-    for resultado in f_lineas:
+    # esta función recibe un item de la lista y lo divide en sus partes
+    def divide_item(item):
         # se divide el resultado por el símbolo |
-        resultado_lista = resultado.split("|")
+        resultado_lista = item.split("|")
         # se consigue la radio y su tiempo
         radio = resultado_lista[0]
         # se consigue la canción y su tiempo
@@ -68,72 +53,132 @@ def tarea2_deteccion(dir_resultados_knn, file_resultados_txt):
         cancion_lista = cancion.split(";")
         # canción nombre
         cancion_nombre = cancion_lista[0]
-        # # intervalo de tiempo
-        # cancion_delta = cancion_lista[1]
-        # # se consigue el inicio y el final
-        # cancion_delta = cancion_delta.split("-")
-        # # inicio
-        # cancion_inicio = float(cancion_delta[0].strip())
-        # # final
-        # cancion_final = float(cancion_delta[1].strip())
+        # intervalo de tiempo
+        cancion_delta = cancion_lista[1]
+        # se consigue el inicio y el final
+        cancion_delta = cancion_delta.split("-")
+        # inicio
+        cancion_inicio = float(cancion_delta[0].strip())
+        # final
+        cancion_final = float(cancion_delta[1].strip())
 
-        # si es que no es None, entonces ya se rellenó el primero
-        if(ult_radio != None):
-            # se revisa si el nombre de la canción es diferente o el desface es diferente
-            if((cancion_nombre != ult_cancion)):
-                # si es que es diferente, entonces se debe escribir cuánto duró la ventana de la canción en la radio
-                # se consigue la diferencia de tiempo
+        # se retorna la info
+        return [[radio_nombre, radio_inicio, radio_final],[cancion_nombre, cancion_inicio, cancion_final], desface]
+
+    # se obtiene el largo de las lista con líneas
+    largo_f_lineas = len(f_lineas)
+
+
+    # ultimo desface
+    ult_desfase = None
+    # último tiempo de inicio 
+    ult_t_inicio = None
+    # último tiempo de final
+    ult_t_final = None
+    # último archivo de Q
+    ult_radio = None
+    # último arhcivo de R
+    ult_cancion = None
+    # última confianza
+    ult_confianza = None
+    # utlimos "strikes ocurridos"
+    ult_strikes = None
+
+    # dice si es está o no en un fragmento
+    in_fragmento = False
+
+    # indice
+    i = 0
+
+    # número de "strikes" permitidos, si es que se está en fun fragmento y el nombre es distinto strike veces, entonces ya terminó el fragmento
+    strikes_permitidos = 3
+
+
+    # se leen todas las líneas
+    while i < largo_f_lineas:
+        # se obtiene el elemento actual que se está analizando
+        elem_i = f_lineas[i]
+        # se obtiene como estrcutura
+        elem_i_struct = divide_item(elem_i)
+
+        # si es que no se está en un fragmento (slice) y no es el último de la lista
+        if(not in_fragmento and (i != largo_f_lineas-1)):
+            # se revisa si el que viene tiene el mismo nombre y desfase 
+            # se obtiene el elemento siguiente
+            elem_i_sgte = f_lineas[i+1]
+            # se obtiene como estrcutura
+            elem_i_sgte_struct = divide_item(elem_i_sgte)
+
+            # se comparan los nombres y desfases
+            nombre_i = elem_i_struct[1][0]
+            desfase_i = elem_i_struct[2]
+            nombre_i_sgte = elem_i_sgte_struct[1][0]
+            desfase_i_sgte = elem_i_sgte_struct[2]
+
+            if(nombre_i == nombre_i_sgte and desfase_i == desfase_i_sgte):
+                # si se cumple, se entra en un fragmento
+                in_fragmento = True
+                # se rellenan los "útlimos"
+                ult_desfase = desfase_i
+                # el tiempo de inicio (radio)
+                ult_t_inicio = elem_i_struct[0][1]
+                # el tiempo de fin (radio)
+                ult_t_final = elem_i_struct[0][2]
+                # el nombre de canción
+                ult_cancion = nombre_i
+                # última confianza
+                ult_confianza = 1
+                # ultimo strikes 
+                ult_strikes = 0
+
+            else:
+                # si no,  
+                # se aumenta el indice
+                i+=1
+                # y se continua
+                continue
+
+        # si es que se está en un fragmento
+        elif(in_fragmento and (i != largo_f_lineas-1)):
+            # se revisa si el que viene tiene el mismo nombre 
+            # se obtiene el elemento siguiente
+            elem_i_sgte = f_lineas[i+1]
+            # se obtiene como estrcutura
+            elem_i_sgte_struct = divide_item(elem_i_sgte)
+
+            # se comparan los nombres
+            nombre_i = elem_i_struct[1][0]
+            nombre_i_sgte = elem_i_sgte_struct[1][0]
+
+            if(nombre_i == nombre_i_sgte):
+                # si se cumple, se actualiza el tiempo final, la confianza y los strikes
+                ult_t_final = elem_i_struct[0][2]
+                ult_confianza += 1
+                ult_strikes = 0
+            else:
+                # si no se cumple se aumentan los strikes
+                ult_strikes += 1
+
+            # si es que los strikes son más que el límite dado, se llegó al fin del fragmento
+            if(ult_strikes >= strikes_permitidos):
+                # ya no se está en un fragmento
+                in_fragmento = False
+                # se consigue la duración 
                 largo = ult_t_final - ult_t_inicio
-                # se escribe en el archivo 
+                # y se escrbe en el archivo
                 print("{}\t{}\t{}\t{}\t{}".format(ult_radio, ult_t_inicio, largo, ult_cancion, ult_confianza), file=archivo)   
 
-                # se consiguen los nuevos valores
-                # ultimo desface
-                ult_desfase = desface
-                # último tiempo de inicio 
-                ult_t_inicio = radio_inicio
-                # último tiempo de final
-                ult_t_final = radio_final
-                # último archivo de Q
-                ult_radio = radio_nombre
-                # último arhcivo de R
-                ult_cancion = cancion_nombre
-                # última confianza
-                ult_confianza = 1   
-            # si es que es la misma canción y el mismo desface
-            else:
-                # se actualiza el útlimo tiempo final
-                ult_t_final = radio_final
-                # la confianza se aumenta en 1
-                ult_confianza += 1
+        # se aumenta el indice
+        i+=1
 
-        # si es que la ultima radio es None, entonces se rellena todo y se va al siguiente ciclo
-        else:
-            # ultimo desface
-            ult_desfase = desface
-            # último tiempo de inicio 
-            ult_t_inicio = radio_inicio
-            # último tiempo de final
-            ult_t_final = radio_final
-            # último archivo de Q
-            ult_radio = radio_nombre
-            # último arhcivo de R
-            ult_cancion = cancion_nombre
-            # última confianza
-            ult_confianza = 1
+
+
+
+
+
         
-            
 
 
-
-
-    # Implementar la deteccion
-    #  1-leer resultados de knn en dir_resultados_knn
-    #  2-buscar secuencias similares entre audios
-    #  4-escribir en file_resultados_txt las detecciones encontradas
-    #    seguir el formato: print("{}\t{}\t{}\t{}\t{}".format(radio, desde, largo, cancion, confianza))
-    # borrar la siguiente linea
-    print("ERROR: no implementado!")
 
 
 # inicio de la tarea

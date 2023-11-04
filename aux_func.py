@@ -11,7 +11,7 @@ def calcular_descriptores_mfcc(archivo_wav, sample_rate, samples_por_ventana, sa
     descriptores = mfcc.transpose()
 
     # se borra la primera columna
-    descriptores = descriptores[:,1:]
+    descriptores = descriptores[:,2:]
 
     return descriptores
 
